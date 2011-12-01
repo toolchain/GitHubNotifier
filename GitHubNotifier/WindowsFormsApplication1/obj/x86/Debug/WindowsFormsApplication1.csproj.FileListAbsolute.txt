@@ -1,0 +1,9 @@
+D:\Workspace\GitHubNotifier\GitHubNotifier\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.exe
+D:\Workspace\GitHubNotifier\GitHubNotifier\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.pdb
+D:\Workspace\GitHubNotifier\GitHubNotifier\WindowsFormsApplication1\obj\x86\Debug\ResolveAssemblyReference.cache
+D:\Workspace\GitHubNotifier\GitHubNotifier\WindowsFormsApplication1\obj\x86\Debug\WindowsFormsApplication1.MainForm.resources
+D:\Workspace\GitHubNotifier\GitHubNotifier\WindowsFormsApplication1\obj\x86\Debug\WindowsFormsApplication1.Properties.Resources.resources
+D:\Workspace\GitHubNotifier\GitHubNotifier\WindowsFormsApplication1\obj\x86\Debug\GenerateResource.read.1.tlog
+D:\Workspace\GitHubNotifier\GitHubNotifier\WindowsFormsApplication1\obj\x86\Debug\GenerateResource.write.1.tlog
+D:\Workspace\GitHubNotifier\GitHubNotifier\WindowsFormsApplication1\obj\x86\Debug\WindowsFormsApplication1.exe
+D:\Workspace\GitHubNotifier\GitHubNotifier\WindowsFormsApplication1\obj\x86\Debug\WindowsFormsApplication1.pdb
