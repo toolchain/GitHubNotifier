@@ -1,23 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace GitHubNotifier
 {
     public partial class MainForm : Form
     {
+        const string MessageStaticText = "New commit by {0}:";
+        const int TextIndentCount = 5;
+
+        private class HeaderListViewItem : ListViewItem
+        {
+            public HeaderListViewItem(string authorName)
+            {
+                Text = string.Format(MessageStaticText, authorName);
+                Font = new Font(Font, FontStyle.Bold);
+                ForeColor = Color.Maroon;
+            }
+        }
+
+        private class TextListViewItem : ListViewItem
+        {
+            public TextListViewItem(string text, bool indent, Color color)
+            {
+                if (indent)
+                    Text = string.Empty.PadLeft(TextIndentCount) + text;
+                else
+                    Text = text;
+
+                ForeColor = color;
+            }
+        }
+
         public MainForm()
         {
             InitializeComponent();
             this.SetFormPosition();
-
-            this.notifyIconGit.Visible = true;
-            this.ShowInTaskbar = false;
+            this.WindowState = FormWindowState.Normal;
+            CheckForUpdates();
         }
 
         /// <summary>
@@ -42,6 +69,7 @@ namespace GitHubNotifier
         {
             this.notifyIconGit.Visible = true;
             this.ShowInTaskbar = false;
+          
         }
 
         /// <summary>
@@ -76,5 +104,53 @@ namespace GitHubNotifier
 
             base.WndProc(ref m);
         }
+
+        /// <summary>
+        /// Handles situation when new commit added and should be shown in notifier
+        /// </summary>
+        private void NewMessageAppeared(string time, string authorName, string message)
+        {
+            TextListViewItem timeListViewItem = new TextListViewItem(time, false, Color.Purple);
+            HeaderListViewItem headerListViewItem = new HeaderListViewItem(authorName);
+            TextListViewItem textListViewItem = new TextListViewItem(message, true, Color.Black);
+            TextListViewItem emptyListViewItem = new TextListViewItem(string.Empty, false, Color.Black);
+
+            AddNewMessage(0, emptyListViewItem);
+            AddNewMessage(0, textListViewItem);
+
+            AddNewMessage(0, headerListViewItem);
+            AddNewMessage(0, timeListViewItem);
+
+            this.Show();
+
+            this.WindowState = FormWindowState.Normal;
+            this.notifyIconGit.Visible = false;
+        }
+
+        /// <summary>
+        /// Add new message to list
+        /// </summary>
+        /// <param name="message"></param>
+        private void AddNewMessage(int index, ListViewItem message)
+        {
+            listViewMessages.Items.Insert(index, message);
+        }
+
+        private void CheckForUpdates()
+        {
+            string xmlURL = "https://github.com/toolchain/GitHubNotifier/commits/master.atom";
+
+            RSSManager rssManager = new RSSManager(xmlURL);
+            Collection<RSS.Items> rssItems = rssManager.GetFeed();
+
+            listViewMessages.Columns[0].Text = rssManager.FeedTitle;
+
+            for (int i = rssItems.Count - 1; i >= 0; i--)
+            {
+                RSS.Items rssItem = rssItems[i];
+                NewMessageAppeared(rssItem.Date.ToString(), rssItem.AuthorName, rssItem.Message);
+            }
+        }
+
     }
 }
