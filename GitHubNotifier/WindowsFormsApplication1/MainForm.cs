@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
+using System.ServiceModel.Syndication;
 
 namespace GitHubNotifier
 {
@@ -15,6 +12,8 @@ namespace GitHubNotifier
     {
         const string MessageStaticText = "New commit by {0}:";
         const int TextIndentCount = 5;
+
+        private DateTime LastUpdatedTime = DateTime.Now;
 
         private class HeaderListViewItem : ListViewItem
         {
@@ -44,7 +43,12 @@ namespace GitHubNotifier
             InitializeComponent();
             this.SetFormPosition();
             this.WindowState = FormWindowState.Normal;
-            CheckForUpdates();
+
+            Timer timer = new Timer();
+            timer.Interval = 30000;
+            timer.Enabled = true;
+            timer.Start();
+            timer.Tick += new EventHandler(CheckForUpdates);
         }
 
         /// <summary>
@@ -136,21 +140,29 @@ namespace GitHubNotifier
             listViewMessages.Items.Insert(index, message);
         }
 
-        private void CheckForUpdates()
+        private void CheckForUpdates(object sender, EventArgs eArgs)
         {
             string xmlURL = "https://github.com/toolchain/GitHubNotifier/commits/master.atom";
 
-            RSSManager rssManager = new RSSManager(xmlURL);
-            Collection<RSS.Items> rssItems = rssManager.GetFeed();
+            XmlReader FeedReader = XmlReader.Create(xmlURL);
 
-            listViewMessages.Columns[0].Text = rssManager.FeedTitle;
+            SyndicationFeed Channel = SyndicationFeed.Load(FeedReader);
 
-            for (int i = rssItems.Count - 1; i >= 0; i--)
+            if (Channel != null)
             {
-                RSS.Items rssItem = rssItems[i];
-                NewMessageAppeared(rssItem.Date.ToString(), rssItem.AuthorName, rssItem.Message);
-            }
-        }
+                listViewMessages.Columns[0].Text = Channel.Title.Text;
 
+                foreach (SyndicationItem RSI in Channel.Items.Reverse())
+                {
+                    if (RSI.LastUpdatedTime > LastUpdatedTime)
+                    {
+                        NewMessageAppeared(RSI.LastUpdatedTime.ToString(), RSI.Authors[0].Name, RSI.Title.Text);
+                    }
+                }
+
+                LastUpdatedTime = DateTime.Parse(Channel.LastUpdatedTime.ToString());
+            }
+ 
+        }
     }
 }
