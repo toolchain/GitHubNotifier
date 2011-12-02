@@ -33,6 +33,7 @@
             this.notifyIconGit = new System.Windows.Forms.NotifyIcon(this.components);
             this.listViewMessages = new System.Windows.Forms.ListView();
             this.columnHeaderMessage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.imageListSmall = new System.Windows.Forms.ImageList(this.components);
             this.SuspendLayout();
             // 
             // notifyIconGit
@@ -54,6 +55,7 @@
             this.listViewMessages.Location = new System.Drawing.Point(0, -1);
             this.listViewMessages.Name = "listViewMessages";
             this.listViewMessages.Size = new System.Drawing.Size(441, 172);
+            this.listViewMessages.SmallImageList = this.imageListSmall;
             this.listViewMessages.TabIndex = 0;
             this.listViewMessages.TileSize = new System.Drawing.Size(220, 30);
             this.listViewMessages.UseCompatibleStateImageBehavior = false;
@@ -63,6 +65,12 @@
             // 
             this.columnHeaderMessage.Text = "Message";
             this.columnHeaderMessage.Width = 439;
+            // 
+            // imageListSmall
+            // 
+            this.imageListSmall.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListSmall.ImageStream")));
+            this.imageListSmall.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageListSmall.Images.SetKeyName(0, "warn.ico");
             // 
             // MainForm
             // 
@@ -87,6 +95,7 @@
         private System.Windows.Forms.NotifyIcon notifyIconGit;
         private System.Windows.Forms.ListView listViewMessages;
         private System.Windows.Forms.ColumnHeader columnHeaderMessage;
+        private System.Windows.Forms.ImageList imageListSmall;
     }
 }
 

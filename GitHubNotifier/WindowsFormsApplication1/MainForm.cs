@@ -13,7 +13,7 @@ namespace GitHubNotifier
         const string MessageStaticText = "New commit by {0}:";
         const int TextIndentCount = 5;
 
-        private DateTime LastUpdatedTime = DateTime.Now;
+        private DateTime LastUpdatedTime;// = DateTime.Now;
 
         private class HeaderListViewItem : ListViewItem
         {
@@ -22,6 +22,7 @@ namespace GitHubNotifier
                 Text = string.Format(MessageStaticText, authorName);
                 Font = new Font(Font, FontStyle.Bold);
                 ForeColor = Color.Maroon;
+                ImageIndex = 0;
             }
         }
 
@@ -43,6 +44,7 @@ namespace GitHubNotifier
             InitializeComponent();
             this.SetFormPosition();
             this.WindowState = FormWindowState.Normal;
+            this.notifyIconGit.Visible = true;
 
             Timer timer = new Timer();
             timer.Interval = 30000;
@@ -59,9 +61,7 @@ namespace GitHubNotifier
         private void notifyIconGit_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             this.Show();
-
             this.WindowState = FormWindowState.Normal;
-            this.notifyIconGit.Visible = false;
         }
 
         /// <summary>
@@ -73,7 +73,6 @@ namespace GitHubNotifier
         {
             this.notifyIconGit.Visible = true;
             this.ShowInTaskbar = false;
-          
         }
 
         /// <summary>
