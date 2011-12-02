@@ -13,7 +13,7 @@ namespace GitHubNotifier
         const string MessageStaticText = "New commit by {0}:";
         const int TextIndentCount = 5;
 
-        private DateTime LastUpdatedTime;// = DateTime.Now;
+        private DateTime LastUpdatedTime = DateTime.Now;
 
         private class HeaderListViewItem : ListViewItem
         {
