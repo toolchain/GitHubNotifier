@@ -5,15 +5,19 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.ServiceModel.Syndication;
+using System.IO;
 
 namespace GitHubNotifier
 {
     public partial class MainForm : Form
     {
+        const string ConfigFileName = "GitHubNotifier.INI";
         const string MessageStaticText = "New commit by {0}:";
         const int TextIndentCount = 5;
 
         private DateTime LastUpdatedTime = DateTime.Now;
+
+        Options ProgramOptions = new Options(Directory.GetCurrentDirectory() + ConfigFileName);
 
         private class HeaderListViewItem : ListViewItem
         {
@@ -42,12 +46,15 @@ namespace GitHubNotifier
         public MainForm()
         {
             InitializeComponent();
+
+            ProgramOptions.ReadOptions();
+
             this.SetFormPosition();
             this.WindowState = FormWindowState.Normal;
             this.notifyIconGit.Visible = true;
 
             Timer timer = new Timer();
-            timer.Interval = 30000;
+            timer.Interval = ProgramOptions.UpdateInterval;
             timer.Enabled = true;
             timer.Start();
             timer.Tick += new EventHandler(CheckForUpdates);
@@ -99,13 +106,13 @@ namespace GitHubNotifier
             {
                 return;
             }
-
+            
             if ((m.Msg == WM_NCLBUTTONDOWN) && (m.WParam.ToInt32() == HTCAPTION))
             {
                 return;
             }
-
-            base.WndProc(ref m);
+            
+            base.WndProc(ref m); 
         }
 
         /// <summary>
@@ -139,9 +146,14 @@ namespace GitHubNotifier
             listViewMessages.Items.Insert(index, message);
         }
 
+        /// <summary>
+        /// Checks for new updates and if any exists show it in notifier
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eArgs"></param>
         private void CheckForUpdates(object sender, EventArgs eArgs)
         {
-            string xmlURL = "https://github.com/toolchain/GitHubNotifier/commits/master.atom";
+            string xmlURL = ProgramOptions.PathToFeed;
 
             XmlReader FeedReader = XmlReader.Create(xmlURL);
 
@@ -163,5 +175,19 @@ namespace GitHubNotifier
             }
  
         }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OptionsDialog optionsDialog = new OptionsDialog(ProgramOptions);
+            if (optionsDialog.ShowDialog() == DialogResult.OK)
+            {
+                ProgramOptions.PathToFeed = optionsDialog.GetPathToFeed();
+                ProgramOptions.UpdateInterval = Convert.ToInt32(optionsDialog.GetUpdateInterval());
+                ProgramOptions.WriteOptions();
+            }
+
+            optionsDialog.Dispose();
+        }
+
     }
 }
